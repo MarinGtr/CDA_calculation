@@ -54,7 +54,7 @@ st.markdown("""
 
 def show_logo_header():
     """Display the logo and app title header."""
-    logo_path = Path(__file__).parent / "assets" / "soudal-quickstep-logo.png"
+    logo_path = Path(__file__).parent / "assets" / "Soudal-quickstep-logo.png"
 
     if logo_path.exists():
         import base64
