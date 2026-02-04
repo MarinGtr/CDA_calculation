@@ -400,7 +400,8 @@ def show_interval_detection_page():
         if start_idx < end_idx:
             preview_v = df['enhanced_speed'].iloc[start_idx:end_idx]
             preview_p = df['power'].iloc[start_idx:end_idx]
-            actual_dist = df['distance'].iloc[end_idx] - df['distance'].iloc[start_idx]
+            d_end = df['distance'].iloc[end_idx] if end_idx < len(df) else df['distance'].iloc[-1]
+            actual_dist = d_end - df['distance'].iloc[start_idx]
 
             st.markdown("**Preview:**")
             prev_cols = st.columns(4)
