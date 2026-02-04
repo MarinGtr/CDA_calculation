@@ -40,6 +40,12 @@ data/*.FIT
 # Streamlit
 .streamlit/secrets.toml
 
+# Environment variables (credentials)
+.env
+
+# Local credentials (use auth.example.json as template)
+auth.json
+
 # OS
 .DS_Store
 Thumbs.db
