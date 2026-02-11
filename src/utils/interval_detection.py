@@ -19,8 +19,9 @@ def detect_intervals(df, n_intervals, interval_distance, target_speeds_kmh,
         DataFrame with 'distance' and 'enhanced_speed' columns
     n_intervals : int
         Number of intervals to detect
-    interval_distance : float
-        Target distance for each interval (meters)
+    interval_distance : float or list of float
+        Target distance for each interval (meters). If a single float, the same
+        distance is used for every interval. If a list, must have length == n_intervals.
     target_speeds_kmh : list of float
         Target speeds for each interval (km/h). Must have length == n_intervals
     distance_tolerance : float
@@ -39,6 +40,14 @@ def detect_intervals(df, n_intervals, interval_distance, target_speeds_kmh,
     if len(target_speeds_kmh) != n_intervals:
         raise ValueError(f"target_speeds_kmh must have {n_intervals} values")
 
+    # Normalize interval_distance to a list (one per interval)
+    if isinstance(interval_distance, (int, float)):
+        interval_distances = [float(interval_distance)] * n_intervals
+    else:
+        interval_distances = list(interval_distance)
+        if len(interval_distances) != n_intervals:
+            raise ValueError(f"interval_distance list must have {n_intervals} values")
+
     target_speeds_mps = [s / 3.6 for s in target_speeds_kmh]
 
     distance = df["distance"].values
@@ -49,6 +58,7 @@ def detect_intervals(df, n_intervals, interval_distance, target_speeds_kmh,
 
     for i, target_speed in enumerate(target_speeds_mps):
         best_start, best_end, best_mse = None, None, None
+        int_dist = interval_distances[i]
 
         for start in range(len(df)):
             if used_indices[start]:
@@ -56,13 +66,13 @@ def detect_intervals(df, n_intervals, interval_distance, target_speeds_kmh,
 
             # Find end index where distance matches
             max_end = start
-            while max_end < len(df) and distance[max_end] - distance[start] < interval_distance:
+            while max_end < len(df) and distance[max_end] - distance[start] < int_dist:
                 max_end += 1
             if max_end == len(df):
                 break
 
             actual_dist = distance[max_end] - distance[start]
-            if abs(actual_dist - interval_distance) > distance_tolerance:
+            if abs(actual_dist - int_dist) > distance_tolerance:
                 continue
 
             # Skip windows that overlap existing intervals

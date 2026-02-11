@@ -251,7 +251,9 @@ def show_interval_detection_page():
         col1, col2, col3 = st.columns(3)
         with col1:
             n_intervals = st.number_input("Number of Intervals", value=4, min_value=1, max_value=10)
-            interval_distance = st.number_input("Interval Distance (m)", value=1250, min_value=500, max_value=2000)
+            per_interval_dist = st.checkbox("Different distance per interval", value=False)
+            if not per_interval_dist:
+                interval_distance = st.number_input("Interval Distance (m)", value=1250, min_value=500, max_value=5000)
 
         with col2:
             distance_tolerance = st.number_input("Distance Tolerance (m)", value=50, min_value=5, max_value=100)
@@ -274,6 +276,21 @@ def show_interval_detection_page():
         except ValueError:
             st.error("Invalid target speeds format. Using defaults.")
             target_speeds = [45.0] * n_intervals
+
+        # Per-interval distance inputs
+        if per_interval_dist:
+            st.markdown("**Interval Distances (m)**")
+            dist_cols = st.columns(min(n_intervals, 4))
+            interval_distances = []
+            for idx in range(n_intervals):
+                with dist_cols[idx % len(dist_cols)]:
+                    d = st.number_input(
+                        f"Interval {idx+1} ({target_speeds[idx]:.0f} km/h)",
+                        value=1250, min_value=500, max_value=5000,
+                        key=f"int_dist_{idx}"
+                    )
+                    interval_distances.append(d)
+            interval_distance = interval_distances
 
         if st.button("🔍 Detect Intervals", type="primary"):
             with st.spinner("Detecting intervals..."):
