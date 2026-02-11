@@ -280,9 +280,9 @@ def show_interval_detection_page():
         # Per-interval distance inputs
         if per_interval_dist:
             st.markdown("**Interval Distances (m)**")
-            dist_cols = st.columns(min(n_intervals, 4))
+            dist_cols = st.columns(min(len(target_speeds), 4))
             interval_distances = []
-            for idx in range(n_intervals):
+            for idx in range(len(target_speeds)):
                 with dist_cols[idx % len(dist_cols)]:
                     d = st.number_input(
                         f"Interval {idx+1} ({target_speeds[idx]:.0f} km/h)",
